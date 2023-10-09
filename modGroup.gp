@@ -1,3 +1,4 @@
+/* read("C:\\Workspace\\SEM7\\kry\\modGroup") */
 modgroup(m) =
 {
 print1("{");
