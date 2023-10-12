@@ -3329,12 +3329,24 @@ public class BigInteger
     }
 
     /**
+     * <h2>serie4 a1</h2>
+     *
      * New algorithm for modular exponentiation for RSA Decryption. Instead of the
      * modulus m, the factors p and q of m=p*q are passed as parameters.
      * Note that the factors p and q are assumed to be prime numbers.
      */
     public BigInteger myModPow(BigInteger exponent, BigInteger p, BigInteger q) {
-        return BigInteger.ZERO;
+        BigInteger a1, a2, u1, u2, x;
+
+        a1 = this.modPow(exponent, p);
+        a2 = this.modPow(exponent, q);
+
+        u1 = q.modInverse(p);
+        u2 = p.modInverse(q);
+
+        x = (a1.multiply(u1.multiply(q))).add(a2.multiply(u2.multiply(p)));
+
+        return x.mod(p.multiply(q));
     }
 
     /**
