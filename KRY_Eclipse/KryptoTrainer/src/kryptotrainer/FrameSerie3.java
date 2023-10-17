@@ -288,7 +288,7 @@ public class FrameSerie3 extends JFrame implements ActionListener {
             schluessel[i] = p;
         }
         // Datenbank verschlüsseln
-        BigInteger m, bigM, u, cTemp, c, key;
+        BigInteger m, M, u, cTemp, c, key;
         m = BigInteger.ONE;
         c = BigInteger.ZERO;
 
@@ -297,9 +297,9 @@ public class FrameSerie3 extends JFrame implements ActionListener {
         }
         for (int j = 0; j < datenSatzUnverschl.length; j++) {
             key = schluessel[j];
-            bigM = m.divide(key);
-            u = bigM.modInverse(key);
-            cTemp = datenSatzUnverschl[j].multiply(u.multiply(bigM));
+            M = m.divide(key);
+            u = M.modInverse(key);
+            cTemp = datenSatzUnverschl[j].multiply(u.multiply(M));
             c = c.add(cTemp);
         }
         datenbankVerschl = c;
