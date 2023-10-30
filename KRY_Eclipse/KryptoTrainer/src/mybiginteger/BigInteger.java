@@ -3376,7 +3376,24 @@ public class BigInteger
      * false if it's definitely composite.
      */
     public boolean myIsProbablePrime(int t) {
+        for (int i = 1; i <= t; i++) {
+            BigInteger a = getRandomBigInteger(this);
+            BigInteger r = a.modPow(this.subtract(BigInteger.ONE), this);
+            if(r.compareTo(BigInteger.ONE) != 0 || a.gcd(this).compareTo(BigInteger.ONE) != 0){
+                return false;
+            }
+        }
         return true;
+    }
+
+    private BigInteger getRandomBigInteger(BigInteger max) {
+        BigInteger result;
+        Random random = new Random();
+        do {
+            result = new BigInteger(max.bitLength(), random);
+        } while (result.compareTo(max) >= 0 || result.compareTo(BigInteger.ONE) < 0);
+
+        return result;
     }
 
     /**
