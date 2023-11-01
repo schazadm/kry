@@ -3379,7 +3379,7 @@ public class BigInteger
         for (int i = 1; i <= t; i++) {
             BigInteger a = getRandomBigInteger(this);
             BigInteger r = a.modPow(this.subtract(BigInteger.ONE), this);
-            if(r.compareTo(BigInteger.ONE) != 0 || a.gcd(this).compareTo(BigInteger.ONE) != 0){
+            if (r.compareTo(BigInteger.ONE) != 0 || a.gcd(this).compareTo(BigInteger.ONE) != 0) {
                 return false;
             }
         }
@@ -3467,10 +3467,10 @@ public class BigInteger
      * Hint: Use Math.log() to compute the logarithm.
      */
     public int findExp(BigInteger r) {
-        int result = 0;
-
-
-        return result;
+        double rDouble = r.doubleValue();
+        double zDouble = this.doubleValue();
+        double result = Math.log(rDouble) / Math.log(zDouble);
+        return (int) result;
     }
 
 
@@ -3479,10 +3479,13 @@ public class BigInteger
      */
 
     public BigInteger findFactor(BigInteger B) {
-
-        BigInteger result = new BigInteger("0");
-
-
+        BigInteger n = this;
+        BigInteger result = ONE;
+        while (result.equals(ONE) || result.equals(n)) {
+            BigInteger a = getRandomBigInteger(n);
+            BigInteger apow = a.modPow(B, n);
+            result = apow.subtract(a).gcd(n);
+        }
         return result;
     }
 
