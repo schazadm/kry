@@ -3504,19 +3504,24 @@ public class BigInteger
      * BigInteger.isProbablePrime().
      *
      * @param bitLength  bitLength of the returned BigInteger.
-     * @param certainity number of runs passed to isProbablePrime().
+     * @param certainty number of runs passed to isProbablePrime().
      * @param rnd        source of random bits used to select candidates to be
      *                   tested for primality.
      * @return a BigInteger of <tt>bitLength</tt> bits that is probably a safe prime
      * @throws ArithmeticException <tt>bitLength &lt; 2</tt>.
      * @see #bitLength
      */
-    public static BigInteger myProbableSafePrime(int bitLength, int certainity, Random rnd) {
+    public static BigInteger myProbableSafePrime(int bitLength, int certainty, Random rnd) {
         if (bitLength < 2) {
-            throw new ArithmeticException("bitLength < 2");
+            throw new ArithmeticException("Bit length must be at least 2.");
         }
 
-        return ZERO;
+        BigInteger primeCandidate;
+        do {
+            primeCandidate = new BigInteger(bitLength, certainty, rnd);
+        } while (!primeCandidate.subtract(BigInteger.ONE).shiftRight(1).isProbablePrime(certainty));
+
+        return primeCandidate;
     }
 
     /**
