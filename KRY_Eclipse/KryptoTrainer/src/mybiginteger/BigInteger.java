@@ -1,6 +1,9 @@
 package mybiginteger;
 
 import java.lang.*;
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.*;
 import java.io.*;
 
@@ -3443,7 +3446,32 @@ public class BigInteger
      * of the square root of this.
      */
     public BigInteger mySqrtFloor() {
-        return BigInteger.ZERO;
+        BigInteger value = this;
+        if (value.compareTo(BigInteger.ZERO) < 0) {
+            throw new ArithmeticException("negative number");
+        }
+        if (value.equals(BigInteger.ZERO) || value.equals(BigInteger.ONE)) {
+            // Square root is the same as the original value for 0 and 1
+            return value;
+        }
+        BigInteger start = BigInteger.ZERO;
+        BigInteger end = value;
+        BigInteger result = BigInteger.ZERO;
+        while (start.compareTo(end) <= 0) {
+            BigInteger mid = start.add(end).divide(BigInteger.valueOf(2));
+            BigInteger midSquared = mid.multiply(mid);
+            if (midSquared.equals(value)) {
+                // Found exact square root
+                return mid;
+            } else if (midSquared.compareTo(value) < 0) {
+                // Update result if mid is less than the square root
+                start = mid.add(BigInteger.ONE);
+                result = mid;
+            } else {
+                end = mid.subtract(BigInteger.ONE);
+            }
+        }
+        return result;
     }
 
     /**
@@ -3458,9 +3486,39 @@ public class BigInteger
      * Returns an integer factor of this, or ONE if this is prime.
      */
     public BigInteger myPollardRho() {
-        return BigInteger.ONE;
+        BigInteger value = this;
+        if (value.compareTo(BigInteger.ONE) <= 0) {
+            throw new ArithmeticException("value < 1");
+        }
+        // check if it is prime
+        if (value.isProbablePrime(50)) {
+            return BigInteger.ONE;
+        }
+        return pollardRho(value);
     }
 
+    private BigInteger pollardRho(BigInteger n) {
+        if (n.equals(BigInteger.ONE)) {
+            return BigInteger.ONE;
+        }
+        if (n.mod(BigInteger.TWO).equals(BigInteger.ZERO)) {
+            return BigInteger.TWO;
+        }
+        BigInteger x = new BigInteger(n.bitLength(), new Random());
+        BigInteger y = x;
+        BigInteger c = new BigInteger(n.bitLength(), new Random());
+        BigInteger d = BigInteger.ONE;
+        while (d.equals(BigInteger.ONE)) {
+            x = f(x, c, n);
+            y = f(f(y, c, n), c, n);
+            d = x.subtract(y).gcd(n);
+        }
+        return d;
+    }
+
+    private BigInteger f(BigInteger x, BigInteger c, BigInteger n) {
+        return x.multiply(x).add(c).mod(n);
+    }
 
     /**
      * Returns the largest integer x such that  this^x <= r
@@ -3503,10 +3561,10 @@ public class BigInteger
      * is specified in terms of the number of runs of the primality test method
      * BigInteger.isProbablePrime().
      *
-     * @param bitLength  bitLength of the returned BigInteger.
+     * @param bitLength bitLength of the returned BigInteger.
      * @param certainty number of runs passed to isProbablePrime().
-     * @param rnd        source of random bits used to select candidates to be
-     *                   tested for primality.
+     * @param rnd       source of random bits used to select candidates to be
+     *                  tested for primality.
      * @return a BigInteger of <tt>bitLength</tt> bits that is probably a safe prime
      * @throws ArithmeticException <tt>bitLength &lt; 2</tt>.
      * @see #bitLength
