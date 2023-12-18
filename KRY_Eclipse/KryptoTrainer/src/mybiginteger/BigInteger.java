@@ -3732,7 +3732,36 @@ public class BigInteger
                                        BigInteger p,
                                        BigInteger a,
                                        BigInteger b) throws Exception {
-        BigInteger[] res = {ZERO, ZERO};
-        return res;
+        if (!isPointOnCurve(this, y, p, a, b)) {
+            throw new NumberFormatException("Punkt liegt nicht auf der Kurve!");
+        }
+        BigInteger[] Q = {this, y};
+        for (BigInteger i = ONE; i.compareTo(factor) < 0; i = i.add(ONE)) {
+            Q = pointAdd(Q[0], Q[1], this, y, p, a);
+        }
+        return Q;
+    }
+
+    private boolean isPointOnCurve(BigInteger x, BigInteger y, BigInteger p, BigInteger a, BigInteger b) {
+        if (x.equals(p)) return true;
+        BigInteger leftSide = y.multiply(y).mod(p);
+        BigInteger rightSide = x.pow(3).add(a.multiply(x)).add(b).mod(p);
+        return leftSide.equals(rightSide);
+    }
+
+    private BigInteger[] pointAdd(BigInteger x1, BigInteger y1, BigInteger x2, BigInteger y2, BigInteger p, BigInteger a) {
+        if (x1.equals(p)) return new BigInteger[]{x2, y2};
+        if (x2.equals(p)) return new BigInteger[]{x1, y1};
+        BigInteger m;
+        if (x1.equals(x2) && y1.equals(y2)) {
+            BigInteger two = BigInteger.valueOf(2);
+            m = (x1.pow(2).multiply(BigInteger.valueOf(3)).add(a))
+                    .multiply(y1.multiply(two).modInverse(p));
+        } else {
+            m = (y2.subtract(y1)).multiply(x2.subtract(x1).modInverse(p));
+        }
+        BigInteger x3 = m.pow(2).subtract(x1).subtract(x2).mod(p);
+        BigInteger y3 = m.multiply(x1.subtract(x3)).subtract(y1).mod(p);
+        return new BigInteger[]{x3, y3};
     }
 }
