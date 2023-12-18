@@ -4,18 +4,16 @@ import mybiginteger.*;
 
 
 public class ElGamalEllipt {
-    BigInteger p;   //Primzahl für GF(p)
-    BigInteger a, b;  //Parameter für die elliptische Kurve (y^2 = x^3 + ax + b)
-    BigInteger[] P = {BigInteger.ZERO, BigInteger.ZERO};  //ausgewählter Punkt (x,y) der elliptischen Kurve
-    BigInteger kA, kB; //geheimer Schlüssel von Alice resp. von Bob
-    BigInteger[] A = {BigInteger.ZERO, BigInteger.ZERO};  //oeffentlicher Schluessel von Alice
-
-    /************************************************************************
-     ************************************************************************
-     * Methoden, die ausprogrammiert werden müssen.
-     ************************************************************************
-     ************************************************************************/
-
+    //Primzahl für GF(p)
+    BigInteger p;
+    //Parameter für die elliptische Kurve (y^2 = x^3 + ax + b)
+    BigInteger a, b;
+    //ausgewählter Punkt (x,y) der elliptischen Kurve
+    BigInteger[] P = {BigInteger.ZERO, BigInteger.ZERO};
+    //geheimer Schlüssel von Alice resp. von Bob
+    BigInteger kA, kB;
+    //oeffentlicher Schluessel von Alice
+    BigInteger[] A = {BigInteger.ZERO, BigInteger.ZERO};
 
     /**
      * Berechnet die Verschlüsselung fuer eine Nachricht M, die als Punkt auf der elliptischen Kurve gegeben ist.
@@ -59,12 +57,6 @@ public class ElGamalEllipt {
         BigInteger result = BigInteger.ZERO;
         return result;
     }
-
-    /************************************************************************
-     ************************************************************************
-     * Methoden, die fertig vorgegeben sind.
-     ************************************************************************
-     ************************************************************************/
 
     public ElGamalEllipt() {
     }

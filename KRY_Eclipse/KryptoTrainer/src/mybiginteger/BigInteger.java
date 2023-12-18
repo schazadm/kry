@@ -3727,17 +3727,17 @@ public class BigInteger
      * Q = factor*P, where P=(this, y) is the given element of the elliptic curve
      * specified by the numbers p, a and b.
      */
-    public BigInteger[] elliptMultiply(BigInteger y,
-                                       BigInteger factor,
-                                       BigInteger p,
-                                       BigInteger a,
-                                       BigInteger b) throws Exception {
+    public BigInteger[] elliptMultiply(BigInteger y, BigInteger factor, BigInteger p, BigInteger a, BigInteger b) throws Exception {
         if (!isPointOnCurve(this, y, p, a, b)) {
-            throw new NumberFormatException("Punkt liegt nicht auf der Kurve!");
+            throw new NumberFormatException("Point is not on the curve!");
         }
-        BigInteger[] Q = {this, y};
-        for (BigInteger i = ONE; i.compareTo(factor) < 0; i = i.add(ONE)) {
-            Q = pointAdd(Q[0], Q[1], this, y, p, a);
+        BigInteger[] Q = {BigInteger.ZERO, BigInteger.ZERO};
+        BigInteger[] R = {this, y};
+        for (int i = factor.bitLength() - 1; i >= 0; i--) {
+            if (factor.testBit(i)) {
+                Q = pointAdd(Q[0], Q[1], R[0], R[1], p, a);
+            }
+            R = pointDouble(R[0], R[1], p, a);
         }
         return Q;
     }
@@ -3762,6 +3762,15 @@ public class BigInteger
         }
         BigInteger x3 = m.pow(2).subtract(x1).subtract(x2).mod(p);
         BigInteger y3 = m.multiply(x1.subtract(x3)).subtract(y1).mod(p);
+        return new BigInteger[]{x3, y3};
+    }
+
+    private BigInteger[] pointDouble(BigInteger x, BigInteger y, BigInteger p, BigInteger a) {
+        if (x.equals(p)) return new BigInteger[]{x, y};
+        BigInteger m = (x.pow(2).multiply(BigInteger.valueOf(3)).add(a))
+                .multiply(y.multiply(BigInteger.valueOf(2)).modInverse(p));
+        BigInteger x3 = m.pow(2).subtract(x.multiply(BigInteger.valueOf(2))).mod(p);
+        BigInteger y3 = m.multiply(x.subtract(x3)).subtract(y).mod(p);
         return new BigInteger[]{x3, y3};
     }
 }
